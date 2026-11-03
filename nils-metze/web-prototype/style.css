@@ -1,0 +1,454 @@
+/* ==========================================================================
+   Metro Monitor – styles
+   1. Fonts   2. Design tokens   3. Reset   4. Utilities
+   5. Layout  6. Components      7. States
+   ========================================================================== */
+
+/* 1. Fonts ----------------------------------------------------------------- */
+/* RM Neue is used if it is installed on the computer,
+   otherwise the browser falls back to Inter (Google Fonts). */
+@font-face {
+    font-family: "RM Neue";
+    src: local("RM Neue"), local("RMNeue-Regular");
+    font-weight: 400;
+}
+
+/* 2. Design tokens --------------------------------------------------------- */
+:root {
+    /* Primitives: same names as the color styles in Figma.
+       TODO: copy the exact hex values from Figma. */
+    --red-500: #DD0000;
+    --green-500: #548A28;
+    --yellow-500: #F2A007;
+    --purple-500: #1F335E;
+    --lilac-500: #998CC4;
+
+    /* Neutrals: HSL steps of 5 % lightness, like in the course */
+    --secondary-000: hsl(0 0% 100%);
+    --secondary-100: hsl(0 0% 95%);
+    --secondary-200: hsl(0 0% 90%);
+    --secondary-700: hsl(0 0% 65%);
+    --secondary-900: hsl(0 0% 55%);
+    --secondary-1200: hsl(0 0% 40%);
+    --secondary-1800: hsl(0 0% 10%);
+
+    /* Semantic tokens: what each color is used for */
+    --color-brand: var(--red-500);
+    --color-time-now: var(--red-500);
+    --color-status-live: var(--green-500);
+    --color-status-warning: var(--yellow-500);
+    --color-line-t1: var(--purple-500);
+    --color-line-t2: var(--lilac-500);
+
+    --color-bg-page: var(--secondary-100);
+    --color-surface: var(--secondary-000);
+    --color-border: var(--secondary-200);
+    --color-border-strong: var(--secondary-900);
+    --color-text-primary: var(--secondary-1800);
+    --color-text-secondary: var(--secondary-1200);
+    --color-text-placeholder: var(--secondary-700);
+
+    /* The LED matrix is a black panel with bright LEDs */
+    --color-matrix-bg: hsl(0 0% 8%);
+    --color-matrix-text: var(--secondary-000);
+    --color-matrix-t1: #3C5AE6;   /* brighter than the website colors, like on the LEDs */
+    --color-matrix-t2: #AA8CE6;
+
+    /* Typography */
+    --font-sans: "RM Neue", "Inter", system-ui, sans-serif;
+    --font-mono: "Space Mono", monospace;
+    --text-small: 0.8125rem;   /* 13px */
+    --text-body: 1rem;         /* 16px */
+    --text-title: 1.5rem;      /* 24px */
+    --text-headline: 2.5rem;   /* 40px */
+
+    /* Spacing scale (same as in Figma) */
+    --space-1: 0.25rem;  /* 4px */
+    --space-2: 0.5rem;   /* 8px */
+    --space-3: 1rem;     /* 16px */
+    --space-4: 1.5rem;   /* 24px */
+    --space-5: 2rem;     /* 32px */
+    --space-6: 3rem;     /* 48px */
+
+    --radius-small: 6px;
+    --radius-medium: 8px;
+    --radius-large: 12px;
+}
+
+/* 3. Reset ----------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+ul {
+    list-style: none;
+}
+
+button,
+input {
+    font: inherit;
+    color: inherit;
+}
+
+/* Elements with the hidden attribute must stay hidden,
+   even if a class gives them display: grid or flex */
+[hidden] {
+    display: none !important;
+}
+
+/* 4. Utilities ------------------------------------------------------------- */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.container {
+    width: min(100% - 2 * var(--space-4), 1200px);
+    margin-inline: auto;
+}
+
+.card {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-large);
+    overflow: hidden; /* keeps row backgrounds inside the rounded corners */
+}
+
+/* 5. Layout ---------------------------------------------------------------- */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.5;
+}
+
+main {
+    flex: 1;
+}
+
+h1 {
+    font-size: var(--text-headline);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.site-header {
+    padding-block: var(--space-6);
+}
+
+.logo {
+    display: block;
+    height: 48px;
+}
+
+.site-footer {
+    padding-block: var(--space-6);
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+
+    a {
+        color: inherit;
+    }
+}
+
+/* Screen 1: centered column (6 of 12 columns) */
+.search-view {
+    max-width: 588px;
+    margin: var(--space-6) auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.lead {
+    color: var(--color-text-secondary);
+}
+
+/* Screen 2: departures (7 columns) + display mirror (5 columns) */
+.departures-view {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+}
+
+.departures-main {
+    grid-column: 1 / 8;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.matrix-panel {
+    grid-column: 8 / 13;
+    margin-top: 5.75rem; /* aligns the panel with the top of the departure card */
+}
+
+/* On narrow screens the panel moves below the departures */
+@media (max-width: 900px) {
+    .departures-main,
+    .matrix-panel {
+        grid-column: 1 / -1;
+        margin-top: 0;
+    }
+}
+
+/* 6. Components ------------------------------------------------------------ */
+
+/* Search input */
+.search-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 48px;
+    padding-inline: var(--space-3);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-medium);
+    color: var(--color-text-secondary);
+
+    &:focus-within {
+        border-color: var(--color-brand);
+    }
+
+    input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: none;
+        color: var(--color-text-primary);
+    }
+
+    input::placeholder {
+        color: var(--color-text-placeholder);
+    }
+}
+
+/* Search result */
+.search-result {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: var(--space-3) var(--space-4);
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--color-bg-page);
+        outline: none;
+    }
+
+    .fa-location-dot {
+        color: var(--color-text-secondary);
+    }
+}
+
+.search-result-name {
+    flex: 1;
+}
+
+.search-result-lines {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.search-empty {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text-secondary);
+}
+
+/* Line badge (T1, T2, …) */
+.line-badge {
+    width: 48px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-small);
+    font-weight: 600;
+    background-color: var(--color-text-secondary); /* any line without its own color */
+    color: var(--color-surface);
+}
+
+.line-badge--t1 {
+    background-color: var(--color-line-t1);
+    color: var(--color-surface);
+}
+
+.line-badge--t2 {
+    background-color: var(--color-line-t2);
+    color: var(--color-line-t1);
+}
+
+/* Back link */
+.back-link {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: none;
+    border: none;
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+
+    &:hover {
+        color: var(--color-text-primary);
+    }
+}
+
+/* Departure row */
+.departure-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 120px;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.departure-time {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-title);
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-status-live);
+}
+
+.departure-empty {
+    padding: var(--space-6) var(--space-4);
+    text-align: center;
+    color: var(--color-text-secondary);
+}
+
+/* Error message */
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    text-align: center;
+
+    .fa-triangle-exclamation {
+        font-size: 24px;
+        color: var(--color-status-warning);
+    }
+}
+
+.error-title {
+    font-weight: 600;
+}
+
+.error-hint {
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+}
+
+/* Display mirror panel */
+.matrix-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+}
+
+.panel-label {
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+}
+
+/* The mirror copies the LED layout: a header + 3 rows of 10 characters */
+.matrix {
+    padding: var(--space-4);
+    background-color: var(--color-matrix-bg);
+    border-radius: var(--radius-medium);
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    line-height: 1.6;
+    color: var(--color-matrix-text);
+    text-transform: none;
+}
+
+.matrix-row {
+    display: grid;
+    grid-template-columns: 3ch 1fr auto;
+    gap: 1ch;
+}
+
+.matrix-tile {
+    text-align: center;
+    background-color: var(--secondary-1200);
+}
+
+.matrix-tile--t1 {
+    background-color: var(--color-matrix-t1);
+}
+
+.matrix-tile--t2 {
+    background-color: var(--color-matrix-t2);
+}
+
+/* Status line */
+.status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-status-live);
+}
+
+/* 7. States ---------------------------------------------------------------- */
+
+/* Departure arriving now: red, no live dot */
+.departure-row--now .departure-time {
+    color: var(--color-time-now);
+}
+
+/* Scheduled (not real-time) departures: calmer grey, no live dot */
+.departure-row--scheduled .departure-time {
+    color: var(--color-text-secondary);
+}
+
+.departure-row--now .live-dot,
+.departure-row--scheduled .live-dot {
+    display: none;
+}
+
+/* Status warning: yellow dot */
+.status[data-state="warning"] .status-dot {
+    background-color: var(--color-status-warning);
+}

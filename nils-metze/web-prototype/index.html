@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Monitor</title>
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+
+    <!-- Google Fonts: Inter (fallback for RM Neue) + Space Mono (LED matrix mirror) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 icons (same set as in the Figma file) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- custom styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Adafruit IO class from the course -->
+    <script src="https://cdn.jsdelivr.net/gh/methio/adafruitIO-class@latest/index.js" defer></script>
+
+    <!-- own scripts, loaded in this order -->
+    <script src="js/config.js" defer></script>
+    <script src="js/stops.js" defer></script>
+    <script src="js/tcl-api.js" defer></script>
+    <script src="js/matrix.js" defer></script>
+    <script src="js/ui.js" defer></script>
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+    <header class="site-header container">
+        <img src="assets/logo.svg" alt="Metro Monitor" class="logo">
+    </header>
+
+    <main class="container">
+        <!-- Screen 1: choose a stop -->
+        <section id="search-view" class="search-view" aria-labelledby="search-title">
+            <h1 id="search-title">Which stop should your display show?</h1>
+            <p class="lead">Pick a stop and your Metro Monitor shows its next departures.</p>
+
+            <label for="stop-search" class="visually-hidden">Search for a stop</label>
+            <div class="search-input">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input id="stop-search" type="search" placeholder="Search for a stop" autocomplete="off">
+            </div>
+
+            <ul id="search-results" class="card search-results">
+                <!-- filled dynamically from JS -->
+            </ul>
+        </section>
+
+        <!-- Screen 2: departures + mirror of the LED matrix -->
+        <section id="departures-view" class="departures-view" aria-labelledby="stop-name" hidden>
+            <div class="departures-main">
+                <button id="change-stop" class="back-link" type="button">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    Change stop
+                </button>
+                <h1 id="stop-name">Stop</h1>
+
+                <div class="card">
+                    <ul id="departure-list" class="departure-list" aria-live="polite">
+                        <!-- filled dynamically from JS -->
+                    </ul>
+
+                    <div id="error-message" class="error-message" hidden>
+                        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                        <p class="error-title">Couldn't load departures.</p>
+                        <p class="error-hint">Retrying in 30 seconds…</p>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="card matrix-panel" aria-label="Mirror of the LED display">
+                <p class="panel-label">Your display</p>
+
+                <!-- hidden from screen readers: it repeats the departure list -->
+                <div class="matrix" aria-hidden="true">
+                    <p id="matrix-header" class="matrix-header"></p>
+                    <ul id="matrix-rows" class="matrix-rows">
+                        <!-- filled dynamically from JS -->
+                    </ul>
+                </div>
+
+                <p id="status" class="status" data-state="warning" aria-live="polite">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span id="status-text">Connecting…</span>
+                </p>
+            </aside>
+        </section>
+    </main>
+
+    <footer class="site-footer container">
+        <p>Data: SYTRAL Mobilités via <a href="https://data.grandlyon.com">data.grandlyon.com</a></p>
+    </footer>
+
+    <!-- Templates: cloned by ui.js for every result / departure -->
+    <template id="search-result-template">
+        <li>
+            <button type="button" class="search-result">
+                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                <span class="search-result-name"></span>
+                <span class="search-result-lines"></span>
+            </button>
+        </li>
+    </template>
+
+    <template id="departure-row-template">
+        <li class="departure-row">
+            <span class="line-badge"></span>
+            <span class="departure-direction"></span>
+            <span class="departure-time">
+                <span class="live-dot" aria-hidden="true"></span>
+                <span class="departure-time-text"></span>
+            </span>
+        </li>
+    </template>
+
+    <template id="matrix-row-template">
+        <li class="matrix-row">
+            <span class="matrix-tile"></span>
+            <span class="matrix-dest"></span>
+            <span class="matrix-time"></span>
+        </li>
+    </template>
+</body>
+</html>
